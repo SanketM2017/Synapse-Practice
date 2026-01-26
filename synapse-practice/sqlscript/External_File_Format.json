@@ -1,13 +1,13 @@
 {
-	"name": "SQL script 3",
+	"name": "External_File_Format",
 	"properties": {
 		"content": {
-			"query": "CREATE EXTERNAL FILE FORMAT Csv_Format\nWITH (\n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n        FIELD_TERMINATOR = ',',\n        STRING_DELIMITER = '\"',\n        FIRST_ROW = 2       \n       \n    )\n);\n\n\n\n\nCREATE EXTERNAL FILE FORMAT Parquet_Format\nWITH (\n    FORMAT_TYPE = PARQUET,\n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n);\n",
+			"query": "CREATE EXTERNAL FILE FORMAT external_parquet_file\nWITH (\n         FORMAT_TYPE = PARQUET,\n         DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n\n    );\n\nCREATE EXTERNAL FILE FORMAT external_csv_file\nWITH (\n         FORMAT_TYPE = DELIMITEDTEXT,\n         FORMAT_OPTIONS(\n            FIELD_TERMINATOR = ''\n         )\n\n    );\n",
 			"metadata": {
 				"language": "sql"
 			},
 			"currentConnection": {
-				"databaseName": "master",
+				"databaseName": "serverlesssqlpool-sanket",
 				"poolName": "Built-in"
 			},
 			"resultLimit": 5000
