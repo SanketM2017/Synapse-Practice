@@ -12,6 +12,10 @@
 			"metadata": "Secure string for 'connectionString' of 'azuresynapsepractice-WorkspaceDefaultSqlServer'",
 			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:azuresynapsepractice.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
+		"AzureDataLakeStorage2_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://azuresynapse05.dfs.core.windows.net/"
+		},
 		"azuresynapsepractice-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://azuresynapse05.dfs.core.windows.net"
@@ -21,6 +25,25 @@
 		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureDataLakeStorage2')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureDataLakeStorage2_properties_typeProperties_url')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
 		{
 			"name": "[concat(parameters('workspaceName'), '/azuresynapsepractice-WorkspaceDefaultSqlServer')]",
 			"type": "Microsoft.Synapse/workspaces/linkedServices",
@@ -94,12 +117,92 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Covid_parquetFile')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "\n\nDROP EXTERNAL TABLE dbo.covid_tracking_ext_table;\n\n\nCREATE EXTERNAL TABLE dbo.covid_tracking_ext_table\n(\n    date DATE,\n    state VARCHAR(10),\n    positive BIGINT,\n    negative BIGINT,\n    pending BIGINT,\n    hospitalizedCurrently BIGINT,\n    hospitalizedCumulative BIGINT,\n    inIcuCurrently BIGINT,\n    inIcuCumulative BIGINT,\n    onVentilatorCurrently BIGINT,\n    onVentilatorCumulative BIGINT,\n    recovered BIGINT,\n    death BIGINT,\n    totalTestResults BIGINT\n)\nWITH (\n    LOCATION = 'inputdata/covid_tracking.parquet',\n    DATA_SOURCE = raw_Ext_source_practice,\n    FILE_FORMAT = external_parquet_file\n);\n\n\n\nSELECT * FROM \nOPENROWSET\n(\n    BULK 'inputdata/covid_tracking.parquet',\n    DATA_SOURCE = 'raw_Ext_source_practice',\n    FORMAT='PARQUET'\n) AS QUERY1;\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "serverlesssqlpool-sanket",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DepartmentCSV_File')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE EXTERNAL TABLE dbo.departments_ext_table\n(\n    DEPARTMENT_ID INT,\n    DEPARTMENT_NAME VARCHAR(100),\n    MANAGER_ID INT,\n    LOCATION_ID INT\n)\nWITH (\n    LOCATION = 'inputdata/departments.csv',\n    DATA_SOURCE = raw_Ext_source_practice,\n    FILE_FORMAT = external_csv_file\n);\n\nDROP EXTERNAL TABLE  dbo.departments_ext_table;\n\n\n\nSELECT *\nFROM dbo.departments_ext_table;\n\n  CREATE EXTERNAL DATA SOURCE raw_Ext_source_practice\n    WITH\n    (\n        LOCATION = 'https://azuresynapse05.blob.core.windows.net/externaldatasource',\n        CREDENTIAL = SynapseCreds\n    );\n\n\n\n\n\nSELECT * FROM \nOPENROWSET\n(\n    BULK 'inputdata/departments.csv',\n    DATA_SOURCE = 'raw_Ext_source_practice',\n    FORMAT='CSV',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = TRUE\n) AS QUERY1;\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "serverlesssqlpool-sanket",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Ext_table_Electric_Vehicle_Population_Data_1')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE EXTERNAL TABLE dbo.Electric_Vehicle_Population_Ext_table\n(\n    [VIN (1-10)] VARCHAR(10),\n    County VARCHAR(100),\n    City VARCHAR(100),\n    State VARCHAR(10),\n    [Postal Code] VARCHAR(10),\n    [Model Year] INT,\n    Make VARCHAR(100),\n    Model VARCHAR(100),\n    [Electric Vehicle Type] VARCHAR(100),\n    [Clean Alternative Fuel Vehicle (CAFV) Eligibility] VARCHAR(150),\n    [Electric Range] INT,\n    [Base MSRP] INT,\n    [Legislative District] INT,\n    [DOL Vehicle ID] BIGINT,\n    [Vehicle Location] VARCHAR(200),\n    [Electric Utility] VARCHAR(200),\n    [2020 Census Tract] BIGINT\n)\nWITH (\n    LOCATION = 'inputdata/Electric_Vehicle_Population_Data_1.csv',\n    DATA_SOURCE = raw_Ext_source_practice,\n    FILE_FORMAT = external_csv_file\n);\n\nDROP EXTERNAL TABLE  dbo.Electric_Vehicle_Population_Ext_table;\n\n\nSELECT * FROM \nOPENROWSET\n(\n    BULK 'inputdata/Electric_Vehicle_Population_Data_1.csv',\n    DATA_SOURCE = 'raw_Ext_source_practice',\n    FORMAT='CSV',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = TRUE\n) AS QUERY1;\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "serverlesssqlpool-sanket",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/External_File_Format')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE EXTERNAL FILE FORMAT external_parquet_file\nWITH (\n         FORMAT_TYPE = PARQUET,\n         DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n\n    );\n\nCREATE EXTERNAL FILE FORMAT external_csv_file\nWITH (\n         FORMAT_TYPE = DELIMITEDTEXT,\n         FORMAT_OPTIONS(\n            FIELD_TERMINATOR = ''\n         )\n\n    );\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "serverlesssqlpool-sanket",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/SQL script 1')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "CREATE MASTER KEY ENCRYPTION BY PASSWORD = 'pass@123';\n\n--CREATE CREADIANCIAL\nCREATE DATABASE SCOPED CREDENTIAL SynapseCreds\nWITH\n     IDENTITY = 'Managed Identity';\n    \n\n    --EXTERNAL DATA SOURCE\n    CREATE EXTERNAL DATA SOURCE raw_Ext_source\n    WITH\n    (\n        LOCATION = 'https://azuresynapse05.blob.core.windows.net/raw',\n        CREDENTIAL = SynapseCreds\n    );\n\n--https://azuresynapse05.blob.core.windows.net/raw/reveune/Brokennames.csv\n\nSELECT * FROM \nOPENROWSET\n(\n    BULK 'reveune/Brokennames.csv',\n    DATA_SOURCE = 'raw_Ext_source',\n    FORMAT='CSV',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = FALSE\n) AS QUERY1;\n\n\n\n",
+					"query": "CREATE MASTER KEY ENCRYPTION BY PASSWORD = 'pass@123';\n\n--CREATE CREADIANCIAL\nCREATE DATABASE SCOPED CREDENTIAL SynapseCreds\nWITH\n     IDENTITY = 'Managed Identity';\n    \n\n    --EXTERNAL DATA SOURCE\n    CREATE EXTERNAL DATA SOURCE raw_Ext_source\n    WITH\n    (\n        LOCATION = 'https://azuresynapse05.blob.core.windows.net/raw',\n        CREDENTIAL = SynapseCreds\n    );\n\n--https://azuresynapse05.blob.core.windows.net/raw/reveune/Brokennames.csv\n\nSELECT * FROM \nOPENROWSET\n(\n    BULK 'reveune/Brokennames.csv',\n    DATA_SOURCE = 'raw_Ext_source',\n    FORMAT='CSV',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = FALSE\n) AS QUERY1;\n\n\n\n\n\n",
 					"metadata": {
 						"language": "sql"
 					},
@@ -120,6 +223,46 @@
 			"properties": {
 				"content": {
 					"query": "SELECT * FROM \nOPENROWSET\n(\n    BULK 'reveune/Brokennames.csv',\n    DATA_SOURCE = 'raw_Ext_source',\n    FORMAT='CSV',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = FALSE\n) AS QUERY1;",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "serverlesssqlpool-sanket",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/covid_tracking_1json_table')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- This is auto-generated code\nSELECT TOP 100\n    jsonContent \n/* --> place the keys that you see in JSON documents in the WITH clause:\n       , JSON_VALUE (jsonContent, '$.key1') AS header1\n       , JSON_VALUE (jsonContent, '$.key2') AS header2\n*/\nFROM\n    OPENROWSET(\n        BULK 'https://azuresynapse05.dfs.core.windows.net/externaldatasource/inputdata/covid_tracking_1.json',\n        FORMAT = 'CSV',\n        FIELDQUOTE = '0x0b',\n        FIELDTERMINATOR ='0x0b',\n        ROWTERMINATOR = '0x0b'\n    )\n    WITH (\n        jsonContent varchar(MAX)\n    ) AS [result]\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/jsonFile')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "\n\n\n\n\n\nCREATE EXTERNAL TABLE dbo.covid_tracking_json_ext_table\n(\n    date DATE,\n    state VARCHAR(10),\n    positive BIGINT,\n    negative BIGINT,\n    pending BIGINT,\n    hospitalizedCurrently BIGINT,\n    hospitalizedCumulative BIGINT,\n    inIcuCurrently BIGINT,\n    inIcuCumulative BIGINT,\n    onVentilatorCurrently BIGINT,\n    onVentilatorCumulative BIGINT,\n    recovered BIGINT,\n    death BIGINT,\n    totalTestResults BIGINT\n)\nWITH (\n    LOCATION = 'inputdata/covid_tracking_1.json',\n    DATA_SOURCE = raw_Ext_source_practice,\n    FILE_FORMAT = Json_As_Csv_File_Format\n)\n\n\n\nSELECT *\nFROM OPENROWSET(\n    BULK 'inputdata/covid_tracking_1.json,\n    DATA_SOURCE = 'raw_Ext_source_practice',\n    FORMAT = '',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b'\n) AS Query1;\n\n\n\n\nSELECT *\nFROM OPENROWSET(\n    BULK 'inputdata/covid_tracking_1.json',\n    DATA_SOURCE = 'raw_Ext_source_practice',\n    FORMAT = 'JSON',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b'\n)\nWITH (\n    [date] VARCHAR(20),\n    [state] VARCHAR(10),\n    [positive] VARCHAR(20),\n    [negative] VARCHAR(20),\n    [pending] VARCHAR(20),\n    [hospitalizedCurrently] VARCHAR(20),\n    [hospitalizedCumulative] VARCHAR(20),\n    [inIcuCurrently] VARCHAR(20),\n    [inIcuCumulative] VARCHAR(20),\n    [onVentilatorCurrently] VARCHAR(20),\n    [onVentilatorCumulative] VARCHAR(20),\n    [recovered] VARCHAR(20),\n    [death] VARCHAR(20),\n    [totalTestResults] VARCHAR(20)\n) AS rows;\n\n\n\n",
 					"metadata": {
 						"language": "sql"
 					},

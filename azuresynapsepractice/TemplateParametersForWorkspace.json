@@ -8,6 +8,9 @@
 		"azuresynapsepractice-WorkspaceDefaultSqlServer_connectionString": {
 			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:azuresynapsepractice.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
+		"AzureDataLakeStorage2_properties_typeProperties_url": {
+			"value": "https://azuresynapse05.dfs.core.windows.net/"
+		},
 		"azuresynapsepractice-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"value": "https://azuresynapse05.dfs.core.windows.net"
 		}
