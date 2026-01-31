@@ -117,6 +117,46 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/CETAS_Electric_Vehicle_Population_Data_1')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- This is auto-generated code\n\n\n-- Create a database to hold external tables\nCREATE DATABASE EVDB;\nGO\nUSE EVDB;\nGO\n\n\nCREATE EXTERNAL TABLE dbo.Electric_Vehicle_Population_Ext\nWITH (\n    LOCATION = 'evpopulation/csv_to_parquet/',   -- folder to store parquet files\n    DATA_SOURCE = raw_Ext_source,            -- linked storage name\n    FILE_FORMAT =  external_parquet_file         -- external file format (Parquet)\n)\nAS\n\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://azuresynapse05.dfs.core.windows.net/externaldatasource/inputdata/Electric_Vehicle_Population_Data_1.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0'\n    ) AS [result]\n\n\n\nSELECT TOP 100 *\nFROM dbo.Electric_Vehicle_Population_Ext;\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "serverlesssqlpool-sanket",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/CETAS_ParquetTo_CSV')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- This is auto-generated code\n\n\n\nCREATE EXTERNAL TABLE dbo.CEATSCovid_Tracking_Ext\nWITH (\n    LOCATION = 'raw/evpopulation/parquet_output',\n    DATA_SOURCE = raw_Ext_source,\n    FILE_FORMAT = external_parquet_file\n)\nAS\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://azuresynapse05.dfs.core.windows.net/externaldatasource/inputdata/covid_tracking.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n\nSELECT TOP 100 *\nFROM dbo.CEATSCovid_Tracking_Ext;\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "serverlesssqlpool-sanket",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Covid_parquetFile')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
@@ -142,7 +182,7 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "CREATE EXTERNAL TABLE dbo.departments_ext_table\n(\n    DEPARTMENT_ID INT,\n    DEPARTMENT_NAME VARCHAR(100),\n    MANAGER_ID INT,\n    LOCATION_ID INT\n)\nWITH (\n    LOCATION = 'inputdata/departments.csv',\n    DATA_SOURCE = raw_Ext_source_practice,\n    FILE_FORMAT = external_csv_file\n);\n\nDROP EXTERNAL TABLE  dbo.departments_ext_table;\n\n\n\nSELECT *\nFROM dbo.departments_ext_table;\n\n  CREATE EXTERNAL DATA SOURCE raw_Ext_source_practice\n    WITH\n    (\n        LOCATION = 'https://azuresynapse05.blob.core.windows.net/externaldatasource',\n        CREDENTIAL = SynapseCreds\n    );\n\n\n\n\n\nSELECT * FROM \nOPENROWSET\n(\n    BULK 'inputdata/departments.csv',\n    DATA_SOURCE = 'raw_Ext_source_practice',\n    FORMAT='CSV',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = TRUE\n) AS QUERY1;\n\n",
+					"query": "CREATE EXTERNAL TABLE dbo.departments_ext_table\n(\n    DEPARTMENT_ID INT,\n    DEPARTMENT_NAME VARCHAR(100),\n    MANAGER_ID INT,\n    LOCATION_ID INT\n)\nWITH (\n    LOCATION = 'inputdata/departments.csv',\n    DATA_SOURCE = raw_Ext_source_practice,\n    FILE_FORMAT = external_csv_file\n);\n\nDROP EXTERNAL TABLE  dbo.departments_ext_table;\n\n\n\nSELECT *\nFROM dbo.departments_ext_table;\n\n  CREATE EXTERNAL DATA SOURCE raw_Ext_source_practice\n    WITH\n    (\n        LOCATION = 'https://azuresynapse05.blob.core.windows.net/externaldatasource',\n        CREDENTIAL = SynapseCreds\n    );\n\n\n\n\n\nSELECT * FROM \nOPENROWSET\n(\n    BULK 'inputdata/departments.csv',\n    DATA_SOURCE = 'raw_Ext_source_practice',\n    FORMAT='CSV',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = TRUE\n) AS QUERY1;\n\n\n\n\n",
 					"metadata": {
 						"language": "sql"
 					},
@@ -317,12 +357,12 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/CETAS_Electric_Vehicle_Population_Data_1')]",
+			"name": "[concat(parameters('workspaceName'), '/Viewscript')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "-- This is auto-generated code\n\n\n-- Create a database to hold external tables\nCREATE DATABASE EVDB;\nGO\nUSE EVDB;\nGO\n\n\nCREATE EXTERNAL TABLE dbo.Electric_Vehicle_Population_Ext\nWITH (\n    LOCATION = 'evpopulation/csv_to_parquet/',   -- folder to store parquet files\n    DATA_SOURCE = raw_Ext_source,            -- linked storage name\n    FILE_FORMAT =  external_parquet_file         -- external file format (Parquet)\n)\nAS\n\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://azuresynapse05.dfs.core.windows.net/externaldatasource/inputdata/Electric_Vehicle_Population_Data_1.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0'\n    ) AS [result]\n\n\n\nSELECT TOP 100 *\nFROM dbo.Electric_Vehicle_Population_Ext;\n",
+					"query": "\n\nCREATE VIEW dbo.vw_Covid_Tracking\nAS\nSELECT\n    date,\n    state,\n    positive,\n    negative,\n    hospitalizedCurrently,\n    death\nFROM dbo.covid_tracking_ext_table;\nGO\n\n\nSELECT TOP 10 * FROM dbo.vw_Covid_Tracking;\n\n\n\nCREATE OR ALTER VIEW dbo.vw_Flight_Fare\nAS\nSELECT\n   DEPARTMENT_ID,\nDEPARTMENT_NAME,\nMANAGER_ID,\nLOCATION_ID\nFROM dbo.Flight_Fare_Ext;\nGO\n\ndrop view dbo.vw_Flight_Fare\n\nCREATE OR ALTER VIEW dbo.vw_Department\nAS\nSELECT\n    DEPARTMENT_ID,\n    DEPARTMENT_NAME,\n    MANAGER_ID,\n    LOCATION_ID\nFROM departments_ext_table;\nGO\n\n\nSELECT TOP 10 *\nFROM dbo.vw_Flight_Fare;\n\n\n\n\n\n\n\n\n",
 					"metadata": {
 						"language": "sql"
 					},
@@ -337,12 +377,12 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/CETAS_ParquetTo_CSV')]",
+			"name": "[concat(parameters('workspaceName'), '/Fligh')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "-- This is auto-generated code\n\n\n\nCREATE EXTERNAL TABLE dbo.CEATSCovid_Tracking_Ext\nWITH (\n    LOCATION = 'raw/evpopulation/parquet_output',\n    DATA_SOURCE = raw_Ext_source,\n    FILE_FORMAT = external_parquet_file\n)\nAS\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://azuresynapse05.dfs.core.windows.net/externaldatasource/inputdata/covid_tracking.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n\nSELECT TOP 100 *\nFROM dbo.CEATSCovid_Tracking_Ext;\n\n",
+					"query": "\n\n\nCREATE EXTERNAL TABLE dbo.Flight_Fare_Ext\n(\n\n ORIGIN_COUNTRY_NAME   VARCHAR(100),\n    DEST_COUNTRY_NAME     VARCHAR(100),\n    FLIGHT_COUNT          INT,\n    FLIGHT_FAIR_PRICE     DECIMAL(10,2)\n\n)\nWITH (\n    LOCATION = 'input/AirIndiaFlightFairData.csv',\n    DATA_SOURCE = raw_Ext_source_practice,\n    FILE_FORMAT = external_csv_file\n);\nGO\n\nDROP EXTERNAL table dbo.Flight_Fare_Ext\n\nSELECT TOP 10 *\nFROM dbo.Flight_Fare_Ext;\n",
 					"metadata": {
 						"language": "sql"
 					},
