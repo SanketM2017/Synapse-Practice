@@ -202,7 +202,7 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "CREATE EXTERNAL TABLE dbo.Electric_Vehicle_Population_Ext_table\n(\n    [VIN (1-10)] VARCHAR(10),\n    County VARCHAR(100),\n    City VARCHAR(100),\n    State VARCHAR(10),\n    [Postal Code] VARCHAR(10),\n    [Model Year] INT,\n    Make VARCHAR(100),\n    Model VARCHAR(100),\n    [Electric Vehicle Type] VARCHAR(100),\n    [Clean Alternative Fuel Vehicle (CAFV) Eligibility] VARCHAR(150),\n    [Electric Range] INT,\n    [Base MSRP] INT,\n    [Legislative District] INT,\n    [DOL Vehicle ID] BIGINT,\n    [Vehicle Location] VARCHAR(200),\n    [Electric Utility] VARCHAR(200),\n    [2020 Census Tract] BIGINT\n)\nWITH (\n    LOCATION = 'inputdata/Electric_Vehicle_Population_Data_1.csv',\n    DATA_SOURCE = raw_Ext_source_practice,\n    FILE_FORMAT = external_csv_file\n);\n\nDROP EXTERNAL TABLE  dbo.Electric_Vehicle_Population_Ext_table;\n\n\nSELECT * FROM \nOPENROWSET\n(\n    BULK 'inputdata/Electric_Vehicle_Population_Data_1.csv',\n    DATA_SOURCE = 'raw_Ext_source_practice',\n    FORMAT='CSV',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = TRUE\n) AS QUERY1;\n\n",
+					"query": "CREATE EXTERNAL TABLE dbo.Electric_Vehicle_Population_Ext_table\n(\n    [VIN (1-10)] VARCHAR(10),\n    County VARCHAR(100),\n    City VARCHAR(100),\n    State VARCHAR(10),\n    [Postal Code] VARCHAR(10),\n    [Model Year] INT,\n    Make VARCHAR(100),\n    Model VARCHAR(100),\n    [Electric Vehicle Type] VARCHAR(100),\n    [Clean Alternative Fuel Vehicle (CAFV) Eligibility] VARCHAR(150),\n    [Electric Range] INT,\n    [Base MSRP] INT,\n    [Legislative District] INT,\n    [DOL Vehicle ID] BIGINT,\n    [Vehicle Location] VARCHAR(200),\n    [Electric Utility] VARCHAR(200),\n    [2020 Census Tract] BIGINT\n)\nWITH (\n    LOCATION = 'inputdata/Electric_Vehicle_Population_Data_1.csv',\n    DATA_SOURCE = raw_Ext_source_practice,\n    FILE_FORMAT = external_csv_file\n);\n\nDROP EXTERNAL TABLE  dbo.Electric_Vehicle_Population_Ext_table;\n\n\nSELECT * FROM \nOPENROWSET\n(\n    BULK 'inputdata/Electric_Vehicle_Population_Data_1.csv',\n    DATA_SOURCE = 'raw_Ext_source_practice',\n    FORMAT='CSV',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = TRUE\n) AS QUERY1;\n\n\n\n\n\n\n\n\n\n\nCREATE EXTERNAL TABLE dbo.covid_tracking_ext_table2\n(\n    date DATE,\n    state VARCHAR(10),\n    positive BIGINT,\n    negative BIGINT,\n    pending BIGINT,\n    hospitalizedCurrently BIGINT,\n    hospitalizedCumulative BIGINT,\n    inIcuCurrently BIGINT,\n    inIcuCumulative BIGINT,\n    onVentilatorCurrently BIGINT,\n    onVentilatorCumulative BIGINT,\n    recovered BIGINT,\n    death BIGINT,\n    totalTestResults BIGINT\n)\nWITH (\n    LOCATION = 'inputdata/covid_tracking2.parquet',\n    DATA_SOURCE = raw_Ext_source_practice,\n    FILE_FORMAT = external_parquet_file\n);\n\n\n\nSELECT * FROM \nOPENROWSET\n(\n    BULK 'inputdata/covid_tracking2.parquet',\n    DATA_SOURCE = 'raw_Ext_source_practice',\n    FORMAT='PARQUET'\n) AS QUERY1;\n\n\n\n\nSELECT TOP 10 *\nFROM  dbo.vw_Electric_Vehicle_Union\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
 					"metadata": {
 						"language": "sql"
 					},
@@ -383,6 +383,46 @@
 			"properties": {
 				"content": {
 					"query": "\n\n\nCREATE EXTERNAL TABLE dbo.Flight_Fare_Ext\n(\n\n ORIGIN_COUNTRY_NAME   VARCHAR(100),\n    DEST_COUNTRY_NAME     VARCHAR(100),\n    FLIGHT_COUNT          INT,\n    FLIGHT_FAIR_PRICE     DECIMAL(10,2)\n\n)\nWITH (\n    LOCATION = 'input/AirIndiaFlightFairData.csv',\n    DATA_SOURCE = raw_Ext_source_practice,\n    FILE_FORMAT = external_csv_file\n);\nGO\n\nDROP EXTERNAL table dbo.Flight_Fare_Ext\n\nSELECT TOP 10 *\nFROM dbo.Flight_Fare_Ext;\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "serverlesssqlpool-sanket",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Electric_Vehicle_Population_Ext_table2')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "\n\n\n\nCREATE EXTERNAL TABLE dbo.Electric_Vehicle_Population_Ext_table2\n(\n     VIN VARCHAR(50),\n    County VARCHAR(100),\n    City VARCHAR(100),\n    State VARCHAR(10),\n    [Postal Code] VARCHAR(10),\n    [Model Year] INT,\n    Make VARCHAR(100),\n    Model VARCHAR(100),\n    [Electric Vehicle Type] VARCHAR(100),\n    [Clean Alternative Fuel Vehicle (CAFV) Eligibility] VARCHAR(150),\n    [Electric Range] INT,\n    [Base MSRP] INT,\n    [Legislative District] INT,\n    [DOL Vehicle ID] BIGINT,\n    [Vehicle Location] VARCHAR(200),\n    [Electric Utility] VARCHAR(200),\n    [2020 Census Tract] BIGINT\n)\nWITH (\n    LOCATION = 'inputdata/Electric_Vehicle_Population_Data_2.csv',\n    DATA_SOURCE = raw_Ext_source_practice,\n    FILE_FORMAT = external_csv_file\n\n);\n\nDROP EXTERNAL table dbo.Electric_Vehicle_Population_Ext_table2\n\nSELECT * FROM \nOPENROWSET\n(\n    BULK 'inputdata/Electric_Vehicle_Population_Data_2.csv',\n    DATA_SOURCE = 'raw_Ext_source_practice',\n    FORMAT='CSV',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = TRUE\n) AS QUERY1;\n\n\nCREATE OR ALTER VIEW dbo.vw_Electric_Vehicle_Union\nAS\nSELECT *\nFROM dbo.Electric_Vehicle_Population_Ext_table\n\nUNION ALL\n\nSELECT *\nFROM dbo.Electric_Vehicle_Population_Ext_table2;\n\nGO\n\nSELECT TOP 10 *\nFROM dbo.vw_Electric_Vehicle_Union;\n\n\n\n\n\n\n\n\n\n\n\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "serverlesssqlpool-sanket",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Cars_Specific_vIew')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "\n\n\nCREATE OR ALTER VIEW dbo.vw_Tesla_Cars\nAS\nSELECT *\nFROM dbo.Electric_Vehicle_Population_Ext_table\nWHERE Make = 'TESLA';\nGO\n\n\n\nSELECT TOP 10 *\nFROM dbo.vw_Tesla_Cars;\n",
 					"metadata": {
 						"language": "sql"
 					},
