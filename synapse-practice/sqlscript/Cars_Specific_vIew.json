@@ -1,0 +1,17 @@
+{
+	"name": "Cars_Specific_vIew",
+	"properties": {
+		"content": {
+			"query": "\n\n\nCREATE OR ALTER VIEW dbo.vw_Tesla_Cars\nAS\nSELECT *\nFROM dbo.Electric_Vehicle_Population_Ext_table\nWHERE Make = 'TESLA';\nGO\n\n\n\nSELECT TOP 10 *\nFROM dbo.vw_Tesla_Cars;\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "serverlesssqlpool-sanket",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
