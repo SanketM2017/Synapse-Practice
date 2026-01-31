@@ -1,0 +1,17 @@
+{
+	"name": "Viewscript",
+	"properties": {
+		"content": {
+			"query": "\n\nCREATE VIEW dbo.vw_Covid_Tracking\nAS\nSELECT\n    date,\n    state,\n    positive,\n    negative,\n    hospitalizedCurrently,\n    death\nFROM dbo.covid_tracking_ext_table;\nGO\n\n\nSELECT TOP 10 * FROM dbo.vw_Covid_Tracking;\n\n\n\nCREATE OR ALTER VIEW dbo.vw_Flight_Fare\nAS\nSELECT\n   DEPARTMENT_ID,\nDEPARTMENT_NAME,\nMANAGER_ID,\nLOCATION_ID\nFROM dbo.Flight_Fare_Ext;\nGO\n\ndrop view dbo.vw_Flight_Fare\n\nCREATE OR ALTER VIEW dbo.vw_Department\nAS\nSELECT\n    DEPARTMENT_ID,\n    DEPARTMENT_NAME,\n    MANAGER_ID,\n    LOCATION_ID\nFROM departments_ext_table;\nGO\n\n\nSELECT TOP 10 *\nFROM dbo.vw_Flight_Fare;\n\n\n\n\n\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "serverlesssqlpool-sanket",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

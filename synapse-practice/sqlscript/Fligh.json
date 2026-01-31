@@ -1,0 +1,17 @@
+{
+	"name": "Fligh",
+	"properties": {
+		"content": {
+			"query": "\n\n\nCREATE EXTERNAL TABLE dbo.Flight_Fare_Ext\n(\n\n ORIGIN_COUNTRY_NAME   VARCHAR(100),\n    DEST_COUNTRY_NAME     VARCHAR(100),\n    FLIGHT_COUNT          INT,\n    FLIGHT_FAIR_PRICE     DECIMAL(10,2)\n\n)\nWITH (\n    LOCATION = 'input/AirIndiaFlightFairData.csv',\n    DATA_SOURCE = raw_Ext_source_practice,\n    FILE_FORMAT = external_csv_file\n);\nGO\n\nDROP EXTERNAL table dbo.Flight_Fare_Ext\n\nSELECT TOP 10 *\nFROM dbo.Flight_Fare_Ext;\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "serverlesssqlpool-sanket",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
