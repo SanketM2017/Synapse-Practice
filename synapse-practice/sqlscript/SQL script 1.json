@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 1",
+	"properties": {
+		"content": {
+			"query": "CREATE MASTER KEY ENCRYPTION BY PASSWORD = 'pass@123';\n\n--CREATE CREADIANCIAL\nCREATE DATABASE SCOPED CREDENTIAL SynapseCreds\nWITH\n     IDENTITY = 'Managed Identity';\n    \n\n    --EXTERNAL DATA SOURCE\n    CREATE EXTERNAL DATA SOURCE raw_Ext_source\n    WITH\n    (\n        LOCATION = 'https://azuresynapse05.blob.core.windows.net/raw',\n        CREDENTIAL = SynapseCreds\n    );\n\n--https://azuresynapse05.blob.core.windows.net/raw/reveune/Brokennames.csv\n\nSELECT * FROM \nOPENROWSET\n(\n    BULK 'reveune/Brokennames.csv',\n    DATA_SOURCE = 'raw_Ext_source',\n    FORMAT='CSV',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = FALSE\n) AS QUERY1;\n\n\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "serverlesssqlpool-sanket",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

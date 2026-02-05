@@ -1,0 +1,17 @@
+{
+	"name": "DepartmentCSV_File",
+	"properties": {
+		"content": {
+			"query": "CREATE EXTERNAL TABLE dbo.departments_ext_table\n(\n    DEPARTMENT_ID INT,\n    DEPARTMENT_NAME VARCHAR(100),\n    MANAGER_ID INT,\n    LOCATION_ID INT\n)\nWITH (\n    LOCATION = 'inputdata/departments.csv',\n    DATA_SOURCE = raw_Ext_source_practice,\n    FILE_FORMAT = external_csv_file\n);\n\nDROP EXTERNAL TABLE  dbo.departments_ext_table;\n\n\n\nSELECT *\nFROM dbo.departments_ext_table;\n\n  CREATE EXTERNAL DATA SOURCE raw_Ext_source_practice\n    WITH\n    (\n        LOCATION = 'https://azuresynapse05.blob.core.windows.net/externaldatasource',\n        CREDENTIAL = SynapseCreds\n    );\n\n\n\n\n\nSELECT * FROM \nOPENROWSET\n(\n    BULK 'inputdata/departments.csv',\n    DATA_SOURCE = 'raw_Ext_source_practice',\n    FORMAT='CSV',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = TRUE\n) AS QUERY1;\n\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "serverlesssqlpool-sanket",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

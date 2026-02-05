@@ -1,0 +1,17 @@
+{
+	"name": "CETAS_ParquetTo_CSV",
+	"properties": {
+		"content": {
+			"query": "-- This is auto-generated code\n\n\n\nCREATE EXTERNAL TABLE dbo.CEATSCovid_Tracking_Ext\nWITH (\n    LOCATION = 'raw/evpopulation/parquet_output',\n    DATA_SOURCE = raw_Ext_source,\n    FILE_FORMAT = external_parquet_file\n)\nAS\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://azuresynapse05.dfs.core.windows.net/externaldatasource/inputdata/covid_tracking.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n\nSELECT TOP 100 *\nFROM dbo.CEATSCovid_Tracking_Ext;\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "serverlesssqlpool-sanket",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

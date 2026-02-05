@@ -1,0 +1,17 @@
+{
+	"name": "Covid_parquetFile",
+	"properties": {
+		"content": {
+			"query": "\n\nDROP EXTERNAL TABLE dbo.covid_tracking_ext_table;\n\n\nCREATE EXTERNAL TABLE dbo.covid_tracking_ext_table\n(\n    date DATE,\n    state VARCHAR(10),\n    positive BIGINT,\n    negative BIGINT,\n    pending BIGINT,\n    hospitalizedCurrently BIGINT,\n    hospitalizedCumulative BIGINT,\n    inIcuCurrently BIGINT,\n    inIcuCumulative BIGINT,\n    onVentilatorCurrently BIGINT,\n    onVentilatorCumulative BIGINT,\n    recovered BIGINT,\n    death BIGINT,\n    totalTestResults BIGINT\n)\nWITH (\n    LOCATION = 'inputdata/covid_tracking.parquet',\n    DATA_SOURCE = raw_Ext_source_practice,\n    FILE_FORMAT = external_parquet_file\n);\n\n\n\nSELECT * FROM \nOPENROWSET\n(\n    BULK 'inputdata/covid_tracking.parquet',\n    DATA_SOURCE = 'raw_Ext_source_practice',\n    FORMAT='PARQUET'\n) AS QUERY1;\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "serverlesssqlpool-sanket",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

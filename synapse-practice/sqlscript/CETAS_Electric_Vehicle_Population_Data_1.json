@@ -1,0 +1,17 @@
+{
+	"name": "CETAS_Electric_Vehicle_Population_Data_1",
+	"properties": {
+		"content": {
+			"query": "-- This is auto-generated code\n\n\n-- Create a database to hold external tables\nCREATE DATABASE EVDB;\nGO\nUSE EVDB;\nGO\n\n\nCREATE EXTERNAL TABLE dbo.Electric_Vehicle_Population_Ext\nWITH (\n    LOCATION = 'evpopulation/csv_to_parquet/',   -- folder to store parquet files\n    DATA_SOURCE = raw_Ext_source,            -- linked storage name\n    FILE_FORMAT =  external_parquet_file         -- external file format (Parquet)\n)\nAS\n\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://azuresynapse05.dfs.core.windows.net/externaldatasource/inputdata/Electric_Vehicle_Population_Data_1.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0'\n    ) AS [result]\n\n\n\nSELECT TOP 100 *\nFROM dbo.Electric_Vehicle_Population_Ext;\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "serverlesssqlpool-sanket",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
